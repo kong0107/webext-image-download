@@ -17,6 +17,7 @@ chrome.runtime.onMessage.addListener((request, sender) => {
             request.dlOptArr.forEach(
                 dlOpt => chrome.downloads.download(dlOpt)
             );
+            break;
         default:
             console.error("unknown command " + request.command);
     }
