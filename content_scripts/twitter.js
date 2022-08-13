@@ -10,6 +10,7 @@
 {
 const match = location.pathname.match(/^\/(\w+)\/status\/(\d+)(\/photo\/(\d+))?/);
 if(match) {
+    const dlOptArr = [];
     document
     .querySelector(`[href="${location.pathname}"]`)
     .closest("article")
@@ -19,10 +20,11 @@ if(match) {
         const imgMatch = img.src.match(/\?format=(\w+)&name=\w+$/);
         if(!imgMatch) console.error("unkown image URL: " + img.src);
         const ext = "." + imgMatch[1];
-        const imgSrc = img.src.replace(imgMatch[0], ext);
-        const fileName = `twitter+${match[1]}+${match[2]}+${index+1}${ext}`;
-        download(imgSrc, fileName);
+        const url = img.src.replace(imgMatch[0], ext);
+        const filename = `twitter+${match[1]}+${match[2]}+${index+1}${ext}`;
+        dlOptArr.push({url, filename});
     });
+    downloadMulti(dlOptArr);
 }
 
 }
