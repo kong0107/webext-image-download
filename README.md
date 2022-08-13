@@ -9,6 +9,7 @@ Firefox is not supported yet.
 * Twitter
 * Plurk
 * MyReadingManga
+* Fanbox
 
 ## working on
 * Pixiv

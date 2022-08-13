@@ -1,8 +1,9 @@
-(new Map([
+(new Map([ // in reverse alphabetical order
     ["twitter", url => url.host.endsWith("twitter.com")],
-    ["pixiv", url => url.href.startsWith("https://www.pixiv.net/artworks/")],
     ["plurk", url => url.host == "www.plurk.com"],
-    ["myreadingmanga", url => url.host == "myreadingmanga.info"]
+    ["pixiv", url => url.href.startsWith("https://www.pixiv.net/artworks/")],
+    ["myreadingmanga", url => url.host == "myreadingmanga.info"],
+    ["fanbox", url => url.host.endsWith("fanbox.cc")]
 ])).forEach((filter, site) => {
     if(filter(location)) {
         chrome.runtime.sendMessage({

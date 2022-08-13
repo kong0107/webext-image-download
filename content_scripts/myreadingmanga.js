@@ -10,7 +10,8 @@ document
 .querySelectorAll(".entry-content :not(a) img")
 .forEach((imgElem, index) => {
     const url = imgElem.dataset.lazySrc || imgElem.src;
-    const filename = prefix + (index + 1) + "." + url.split(".").pop();
+    const ext = url.split(".").pop();
+    const filename = prefix + (index + 1) + "." + ext;
     dlOptArr.push({url, filename});
 });
 downloadMulti(dlOptArr);

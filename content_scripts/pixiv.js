@@ -20,7 +20,6 @@ document
         command: "download",
         urls: [img.src]
     });
-    // download(img.src, "abc.jpeg"); // error due to CORS....
 });
 
 }
