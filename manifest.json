@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "Twitter Image Download",
-    "version": "0.3.0",
+    "name": "Image Download",
+    "version": "0.3.1",
     "permissions": ["activeTab", "scripting", "downloads"],
     "action": {},
     "background": {
