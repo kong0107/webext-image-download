@@ -13,13 +13,19 @@ document
     if(elem.textContent) elem.click();
 });
 
+const author = document.querySelector('[href^="/users/"]').href.split("/").pop();
+
+const dlOptArr = [];
 document
-.querySelectorAll("figure img")
-.forEach(img => {
-    chrome.runtime.sendMessage({
-        command: "download",
-        urls: [img.src]
-    });
+.querySelectorAll("figure a img")
+.forEach(imgElem => {
+    const url = imgElem.closest("a").href;
+    const filename = `pixiv+${author}+` + url.split("/").pop();
+    // const headers = [{name: "Referer", value: location.href}];
+
+    console.debug(url, filename);
+    dlOptArr.push({url, filename});
 });
+downloadMulti(dlOptArr);
 
 }

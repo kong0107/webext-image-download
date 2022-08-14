@@ -5,20 +5,21 @@ chrome.action.onClicked.addListener(tab => {
     });
 });
 
-chrome.runtime.onMessage.addListener((request, sender) => {
-    switch(request.command) {
-        case "loadContentScript":
-            chrome.scripting.executeScript({
-                target: {tabId: sender.tab.id},
-                files: [`content_scripts/${request.site}.js`]
-            });
-            break;
-        case "downloadMulti":
-            request.dlOptArr.forEach(
-                dlOpt => chrome.downloads.download(dlOpt)
-            );
-            break;
-        default:
-            console.error("unknown command " + request.command);
+const listeners = {
+    loadContentScript: ({site}, {tab}) => {
+        chrome.scripting.executeScript({
+            target: {tabId: tab.id},
+            files: [`content_scripts/${site}.js`]
+        });
+    },
+    downloadMulti: ({dlOptArr}) => {
+        dlOptArr.forEach(dlOpt =>
+            chrome.downloads.download(dlOpt)
+        );
     }
+};
+chrome.runtime.onMessage.addListener(function (request) {
+    if(listeners.hasOwnProperty(request.command))
+        return listeners[request.command].apply(null, arguments);
+    console.error("unknown command " + request.command);
 });
