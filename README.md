@@ -17,3 +17,4 @@ For sites not supported, this extension still tries to download all images in ma
 
 ## working on
 * Pixiv
+* Facebook
