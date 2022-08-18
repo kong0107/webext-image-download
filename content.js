@@ -5,7 +5,8 @@ const sites = [ // in reverse alphabetical order
     ["plurk", url => url.host == "www.plurk.com"],
     // ["pixiv", url => url.href.startsWith("https://www.pixiv.net/artworks/")],
     ["myreadingmanga", url => url.host == "myreadingmanga.info"],
-    ["fanbox", url => url.host.endsWith("fanbox.cc")]
+    ["fanbox", url => url.host.endsWith("fanbox.cc")],
+    ["facebook", url => url.host.endsWith("facebook.com")]
 ];
 const siteInfo = sites.find(([, tester]) => tester(location));
 
