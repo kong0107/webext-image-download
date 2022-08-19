@@ -1,6 +1,11 @@
 /**
  * Facebook
  *
+ * 臉書進入燈箱模式是用 `pushState` ，也就是：
+ * * 不會觸發 `popstate` 事件，
+ * * 燈箱還沒準備好，
+ * 故只好自己持續檢查燈箱狀態看是否有變化。
+ *
  * 準備點進去的連結。要考量的情形：
  * * 有些相同的元素會在其他節點裡（推測是 RWD 需求），故只抓 `body>div[id^=mount_0_0_]` 裡的。
  * * 封面照片的連結有 `a[aria-label="Link to open profile cover photo"]` ，應排除。
@@ -50,7 +55,7 @@ switch(location.pathname) {
 
 if(anchors.length) {
     let i = 0;
-    const listener = event => {
+    const listener = async (event) => {
         const url = event.detail.src;
         if(!url) return;
 
@@ -58,12 +63,10 @@ if(anchors.length) {
         const filename = `facebook+${userID}+${asp.get("set")}+${asp.get("fbid")}.jpeg`;
         downloadMulti([{url, filename}]);
 
-        const btnClose = document.querySelector("[aria-label]");
-        btnClose.click();
-
+        await historyGo(-1); // close lightbox mode
         ++i;
         if(i == anchors.length) lightBox.removeEventListener("imageChange", listener);
-        else setTimeout(() => anchors[i].click(), 100);
+        else anchors[i].click();
     };
     lightBox.addEventListener("imageChange", listener);
     anchors[0].click();

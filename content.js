@@ -51,11 +51,33 @@ else { // for sites do not match, download all images
 
 
 /**
- * Funcions also used in other content scripts
+ * Funcions also used in other content scripts.
+ */
+
+/**
+ * Send a message to background to download multiple files.
+ * @param {DownloadOptions[]} dlOptArr
+ * @returns {Promise}
  */
 function downloadMulti(dlOptArr) {
-    chrome.runtime.sendMessage({
+    return chrome.runtime.sendMessage({
         command: "downloadMulti",
         dlOptArr
+    });
+}
+
+/**
+ * Promisified version of `history.go`.
+ * @param {integer} delta
+ * @returns {Promise} PopStateEvent
+ */
+function historyGo(delta) {
+    return new Promise(resolve => {
+        const listener = event => {
+            removeEventListener("popstate", listener);
+            resolve(event);
+        };
+        addEventListener("popstate", listener);
+        history.go(delta);
     });
 }

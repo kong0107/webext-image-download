@@ -6,7 +6,7 @@
  * However, Twitter does not auto-redirect to right URL if userID is wrong only in upper/lower case;
  * therefore matching should be case-insensitive and then use the <a href> to get the right userID.
  *
- * In light box mode, the above method ends up with the thumbnail of the enlarged image.
+ * In lightbox mode, the above method ends up with the thumbnail of the enlarged image.
  * But that also works for our requirement.
  */
 {
@@ -20,7 +20,7 @@ if(match) {
     .closest("article")
     .querySelectorAll("[href*=photo] img")
     .forEach((img, index) => {
-        if(match[3] && match[4] != index + 1) return; ///< For light box mode, just download the enlarged image.
+        if(match[3] && match[4] != index + 1) return; ///< For lightbox mode, just download the enlarged image.
         const imgMatch = img.src.match(/\?format=(\w+)&name=\w+$/);
         if(!imgMatch) console.error("unkown image URL: " + img.src);
         const ext = "." + imgMatch[1];

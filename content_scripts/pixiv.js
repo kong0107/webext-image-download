@@ -2,7 +2,7 @@
  * Pixiv
  */
 {
-/// For light box mode
+/// For lightbox mode
 if(document.body.lastChild.role == "presentation") {
 }
 
