@@ -75,10 +75,9 @@ function downloadMulti(dlOptArr) {
  */
 async function download1by1(dlOptArr) {
     for(let i = 0; i < dlOptArr.length; ++i) {
-        const dlOpt = dlOptArr[i];
         const response = await chrome.runtime.sendMessage({
             command: "download",
-            dlOpt
+            dlOpt: dlOptArr[i]
         });
         console.debug(response);
     }

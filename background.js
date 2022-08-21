@@ -6,23 +6,15 @@ chrome.action.onClicked.addListener(tab => {
 });
 
 const listeners = {
-    loadContentScript: ({site}, {tab}) => {
+    loadContentScript: ({site}, {tab}, sendResponse) => {
         chrome.scripting.executeScript({
             target: {tabId: tab.id},
             files: [`content_scripts/${site}.js`]
-        });
+        }, ([result]) => sendResponse(result));
+        return true;
     },
-    download: async({dlOpt}, {}, sendResponse) => {
-        const dlID = await chrome.downloads.download(dlOpt);
-        if(!dlID) return sendResponse(chrome.runtime.lastError);
-
-        const dl = new DownloadItemExt(dlID);
-        const listener = async() => {
-            const [dlItem] = await chrome.downloads.search({id: dlID});
-            sendResponse(dlItem);
-        };
-        dl.addEventListener("complete", listener);
-        dl.addEventListener("interrupted", listener);
+    download: ({dlOpt}, _, cb) => {
+        return download(dlOpt).then(cb, cb);
     },
     downloadMulti: ({dlOptArr}) => {
         dlOptArr.forEach(dlOpt =>
@@ -37,17 +29,23 @@ chrome.runtime.onMessage.addListener(function (request) {
 });
 
 
-class DownloadItemExt extends EventTarget {
-    static downloads = new Map();
-    constructor(id) {
-        super();
-        DownloadItemExt.downloads.set(id, this);
-    }
-}
+/**
+ *
+ * @param {DownloadOptions} options
+ * @returns {Promise} DownloadItem
+ */
+function download(options) {
+    return new Promise(async(resolve, reject) => {
+        const id = await chrome.downloads.download(options);
+        if(!id) return reject(chrome.runtime.lastError);
 
-chrome.downloads.onChanged.addListener(delta => {
-    if(delta.state) {
-        const dl = DownloadItemExt.downloads.get(delta.id);
-        if(dl) dl.dispatchEvent(new CustomEvent(delta.state.current, {detail: delta}));
-    }
-});
+        const listener = async(delta) => {
+            if(delta.id !== id || !delta.state || delta.state === "in_progress") return;
+            chrome.downloads.onChanged.removeListener(listener);
+            const [item] = await chrome.downloads.search({id});
+            if(item.error) reject(item.error);
+            else resolve(item);
+        };
+        chrome.downloads.onChanged.addListener(listener);
+    });
+}
