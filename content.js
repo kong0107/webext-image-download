@@ -3,8 +3,9 @@
 const sites = [ // in reverse alphabetical order
     ["twitter", url => url.host.endsWith("twitter.com")],
     ["plurk", url => url.host == "www.plurk.com"],
-    // ["pixiv", url => url.href.startsWith("https://www.pixiv.net/artworks/")],
+    ["pixiv", url => url.href.startsWith("https://www.pixiv.net/artworks/")],
     ["myreadingmanga", url => url.host == "myreadingmanga.info"],
+    ["housamo.wiki", url => url.host == "housamo.wiki"],
     ["fanbox", url => url.host.endsWith("fanbox.cc")],
     ["facebook", url => url.host.endsWith("facebook.com")]
 ];
@@ -55,7 +56,7 @@ else { // for sites do not match, download all images
  */
 
 /**
- * Send a message to background to download multiple files.
+ * Send a message to background to download multiple files at the same time.
  * @param {DownloadOptions[]} dlOptArr
  * @returns {Promise}
  */
@@ -64,6 +65,23 @@ function downloadMulti(dlOptArr) {
         command: "downloadMulti",
         dlOptArr
     });
+}
+
+/**
+ * For each URL to download, send a message to background and wait until it's finished (either complete or interrupted).
+ * Close the tab will stop the following download. This is on purpose.
+ * @param {DownloadOptions[]} dlOptArr
+ * @returns {Promise}
+ */
+async function download1by1(dlOptArr) {
+    for(let i = 0; i < dlOptArr.length; ++i) {
+        const dlOpt = dlOptArr[i];
+        const response = await chrome.runtime.sendMessage({
+            command: "download",
+            dlOpt
+        });
+        console.debug(response);
+    }
 }
 
 /**

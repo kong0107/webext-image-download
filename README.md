@@ -13,6 +13,7 @@ For sites not supported, this extension still tries to download all images in ma
 * Twitter
 * Plurk
 * MyReadingManga
+* housamo.wiki (character page only)
 * Fanbox
 
 ## working on
