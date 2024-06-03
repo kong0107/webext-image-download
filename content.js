@@ -1,7 +1,7 @@
 { // wrap in curly braces to avoid duplicate declaration
 
 const sites = [ // in reverse alphabetical order
-    ["twitter", url => url.host.endsWith("twitter.com")],
+    ["twitter", url => url.host.endsWith("x.com")],
     ["plurk", url => url.host == "www.plurk.com"],
     ["pixiv", url => url.href.startsWith("https://www.pixiv.net/artworks/")],
     ["myreadingmanga", url => url.host == "myreadingmanga.info"],

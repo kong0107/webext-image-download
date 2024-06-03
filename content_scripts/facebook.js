@@ -15,7 +15,7 @@
 {
 let userID;
 let anchors = [];
-const locSP = new URLSearchParams(document.location.search);
+const locSP = new URLSearchParams(location.search);
 
 const lightBox = new EventTarget();
 let imgSrc;
@@ -25,12 +25,35 @@ setInterval(() => {
     if(imgSrc == src) return;
     imgSrc = src;
     lightBox.dispatchEvent(new CustomEvent("imageChange", {detail: {src}}));
+    console.debug("lightbox change", src);
 }, 100);
 
 switch(location.pathname) {
     case "/media/set/": {
-        const userTab = document.querySelector("a[role=tab]");
-        userID = userTab.search ? userTab.search.substring(4) : userTab.pathname.split("/")[1];
+        /**
+         * 相簿有不同的顯示形式：
+         * 1. 跟個人檔案首頁一樣，封面相片仍然在上方、有顯示其他頁籤。如：
+         *    * 個人帳號的所有相簿
+         *    * 粉絲專頁的特殊相簿（大頭貼照、封面照片）
+         * 2. 說明欄和回應區在右側，左側顯示照片。如：
+         *    * 粉絲專頁的一般相簿
+         *    * 社團的相簿
+         *
+         * 於前者的情形，若使用者或專頁沒有另設別名，則下面找到的連結會是 profile.php?id={numeric_id}&sk=photos
+         */
+        const albumsAnchor = document.querySelector([
+            '[href$="&sk=photos"]', // numeric ID of user or fanpage
+            '[href$="/photos"]',  // user album, or fanpage native album
+            '[href$="/photos/"]', // fanpage created album
+            '[href$="/albums/"]' // group album
+        ].join(","));
+        if(albumsAnchor.search) {
+            userID = (new URLSearchParams(albumsAnchor.search)).get("id");
+        }
+        else {
+            const pathParts = albumsAnchor.pathname.split("/");
+            userID = pathParts[1] === "groups" ? pathParts[2] : pathParts[1];
+        }
         anchors = [...document.querySelectorAll("a[href]")]
         .filter(anchor => (new URLSearchParams(anchor.search)).get("set") === locSP.get("set"));
         break;
@@ -43,11 +66,12 @@ switch(location.pathname) {
         break;
     }
     default: {
-        const match = location.pathname.match(/^\/([\w\.]+)\/posts\/(\w+)$/);
+        let match;
+        match = location.pathname.match(/^\/([\w\.]+)\/posts\/(\w+)$/);
         if(match) {
             userID = match[1];
             anchors = [...document.querySelectorAll('[id^=mount] [href*="/photo"] img[src^=https]')]
-            .filter(imgElem => !imgElem.closest("ul"))
+            .filter(imgElem => !imgElem.closest('ul, a[href*="&set="]'))
             .map(imgElem => imgElem.closest("a"));
         }
     }
