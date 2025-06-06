@@ -1,31 +1,43 @@
-/**
- * Pixiv
- */
-{
-/// For lightbox mode
-if(document.body.lastChild.role == "presentation") {
-}
+console.debug('content_scripts/pixiv.js');
 
-/// Click "expand all" button
-document
-.querySelectorAll("main button div")
-.forEach(elem => {
-    if(elem.textContent) elem.click();
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	switch (message) {
+		case 'getDownloadOptions':
+			let promise;
+			const btnExpand = document.querySelector("main button div:not(:has(svg),:empty)");
+			if (btnExpand) {
+				btnExpand.click();
+				promise = new Promise(resolve => {
+					const intervalID = setInterval(() => {
+						const imgList = document.querySelectorAll('main figure img');
+						if (imgList.length > 1) {
+							clearInterval(intervalID);
+							resolve(imgList);
+						}
+					});
+				});
+			}
+			else promise = Promise.resolve(document.querySelectorAll('main figure img'));
+
+			const authorElem = document.querySelector('aside h2 a');
+			const authorID = authorElem.dataset.gtmValue;
+			const authorName = authorElem.querySelector('div').title;
+			const artID = location.pathname.split('/').pop();
+
+			const headers = [{name: 'Referer', value: location.href}];
+			promise.then(imgList => {
+				console.debug(imgList);
+				sendResponse(
+					[...imgList].map((img, index) => ({
+						url: img.src,
+						filename: `pixiv+${authorName}(${authorID})+${artID}+${index}.jpg`,
+						headers
+					}))
+				);
+			});
+
+			return true;
+		default:
+			return console.warn("Unknown message:", message) && !1;
+	}
 });
-
-const author = document.querySelector('[href^="/users/"]').href.split("/").pop();
-
-const dlOptArr = [];
-document
-.querySelectorAll("figure a img")
-.forEach(imgElem => {
-    const url = imgElem.closest("a").href;
-    const filename = `pixiv+${author}+` + url.split("/").pop();
-    // const headers = [{name: "Referer", value: location.href}];
-
-    console.debug(url, filename);
-    dlOptArr.push({url, filename});
-});
-downloadMulti(dlOptArr);
-
-}

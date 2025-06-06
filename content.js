@@ -1,5 +1,7 @@
 { // wrap in curly braces to avoid duplicate declaration
 
+console.debug("content.js loaded", location.href);
+
 const sites = [ // in reverse alphabetical order
     ["twitter", url => url.host.endsWith("x.com")],
     ["plurk", url => url.host == "www.plurk.com"],
@@ -12,7 +14,7 @@ const sites = [ // in reverse alphabetical order
 const siteInfo = sites.find(([, tester]) => tester(location));
 
 if(siteInfo) {
-    chrome.runtime.sendMessage({
+    browser.runtime.sendMessage({
         command: "loadContentScript",
         site: siteInfo[0]
     });
@@ -61,7 +63,7 @@ else { // for sites do not match, download all images
  * @returns {Promise}
  */
 function downloadMulti(dlOptArr) {
-    return chrome.runtime.sendMessage({
+    return browser.runtime.sendMessage({
         command: "downloadMulti",
         dlOptArr
     });
@@ -75,7 +77,7 @@ function downloadMulti(dlOptArr) {
  */
 async function download1by1(dlOptArr) {
     for(let i = 0; i < dlOptArr.length; ++i) {
-        const response = await chrome.runtime.sendMessage({
+        const response = await browser.runtime.sendMessage({
             command: "download",
             dlOpt: dlOptArr[i]
         });

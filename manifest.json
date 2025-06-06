@@ -1,10 +1,29 @@
 {
     "manifest_version": 3,
     "name": "Image Download",
-    "version": "0.6.2",
-    "permissions": ["activeTab", "scripting", "downloads"],
-    "action": {},
+    "version": "0.7.0-alpha",
+    "permissions": [
+        "activeTab",
+        "downloads"
+    ],
     "background": {
-        "service_worker": "background.js"
-    }
+        "scripts": ["background.js"]
+    },
+    "page_action": {
+        "default_title": "Download image(s)",
+        "show_matches": [
+            "https://x.com/*/status/*",
+            "https://www.pixiv.net/artworks/*"
+        ]
+    },
+    "content_scripts": [
+        {
+            "matches": ["https://x.com/*"],
+            "js": ["content_scripts/twitter.js"]
+        },
+        {
+            "matches": ["https://www.pixiv.net/*"],
+            "js": ["content_scripts/pixiv.js"]
+        }
+    ]
 }
