@@ -28,11 +28,14 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			promise.then(imgList => {
 				console.debug(imgList);
 				sendResponse(
-					[...imgList].map((img, index) => ({
-						url: img.src,
-						filename: `pixiv+${authorName}(${authorID})+${artID}+${index}.jpg`,
-						headers
-					}))
+					[...imgList].map((img, index) => {
+						const ext = img.src.slice(img.src.lastIndexOf('.'));
+						return {
+							url: img.src,
+							filename: `pixiv+${authorName}(${authorID})+${artID}+${index}${ext}`,
+							headers
+						};
+					})
 				);
 			});
 

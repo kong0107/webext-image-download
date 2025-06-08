@@ -10,10 +10,10 @@ The formats vary for different sites.
 (in reverse alphabetical order)
 * X (Twitter)
 * Pixiv
+* Plurk
 
 ## working on
 * Facebook
-* Plurk
 * MyReadingManga
 * housamo.wiki (character page only)
 * Fanbox

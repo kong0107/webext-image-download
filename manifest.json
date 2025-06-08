@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Image Download",
-    "version": "0.7.0-alpha",
+    "version": "0.7.0",
     "permissions": [
         "activeTab",
         "downloads"
@@ -13,7 +13,8 @@
         "default_title": "Download image(s)",
         "show_matches": [
             "https://x.com/*/status/*",
-            "https://www.pixiv.net/artworks/*"
+            "https://www.pixiv.net/artworks/*",
+            "https://www.plurk.com/p/*"
         ]
     },
     "content_scripts": [
@@ -24,6 +25,10 @@
         {
             "matches": ["https://www.pixiv.net/*"],
             "js": ["content_scripts/pixiv.js"]
+        },
+        {
+            "matches": ["https://www.plurk.com/p/*"],
+            "js": ["content_scripts/plurk.js"]
         }
     ]
 }
